@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.chee.parsingdb.data.FileLine;
 import org.chee.parsingdb.data.TableMsg;
 import org.chee.parsingdb.enums.MySqlJavaTypeEnum;
+import org.chee.parsingdb.utils.LogUtils;
 import org.chee.parsingdb.utils.MyStringUtils;
 
 import java.io.BufferedWriter;
@@ -43,6 +44,7 @@ public class ParsingJavaEntity {
                 out.newLine();
             }
         } catch (Exception e) {
+            LogUtils.printExeptionLog(log, e);
         }
     }
 
@@ -56,16 +58,19 @@ public class ParsingJavaEntity {
         if (packageName.endsWith(".")) {
             packageName = packageName.substring(0, packageName.length() - 1);
         }
-        result.add("import " + packageName + ";");
+        result.add("package " + packageName + ";");
 
         result.add("");
-        result.add("import lombok.Builder;");
+        result.add("import javax.persistence.Entity;");
+        result.add("import javax.persistence.Id;");
+        result.add("import javax.persistence.Table;");
         result.add("import lombok.Data;");
         result.add("");
         result.add("/**");
         result.add(" * " + tableMsg.getTableName());
         result.add(" */");
         result.add("@Data");
+        result.add("@Entity");
         result.add("@Table(name = \"" + tableMsg.getTableCode() + "\")");
         result.add("public class " + MyStringUtils.underLineToClassName(tableMsg.getTableCode()) + " {");
         for (FileLine line : tableMsg.getFileLineList()) {
@@ -75,6 +80,9 @@ public class ParsingJavaEntity {
                 Stream.of(line.getComment().split("\\n")).forEach(str -> result.add(FOUR_SPACE + " * " + str));
             }
             result.add(FOUR_SPACE + " */");
+            if (Boolean.TRUE.equals(line.getIsPrimaryKey())) {
+                result.add(FOUR_SPACE + "@Id");
+            }
             result.add(FOUR_SPACE + "private " + MySqlJavaTypeEnum.getJavaType(line.getDataType()) + " " + MyStringUtils.underLineToCamel(line.getCode()) + ";");
             result.add("");
         }
