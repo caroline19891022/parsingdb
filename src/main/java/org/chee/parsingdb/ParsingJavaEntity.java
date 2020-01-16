@@ -4,6 +4,7 @@ import lombok.extern.java.Log;
 import org.apache.commons.lang3.StringUtils;
 import org.chee.parsingdb.data.FileLine;
 import org.chee.parsingdb.data.TableMsg;
+import org.chee.parsingdb.data.XlsMsg;
 import org.chee.parsingdb.enums.MySqlJavaTypeEnum;
 import org.chee.parsingdb.utils.LogUtils;
 import org.chee.parsingdb.utils.MyStringUtils;
@@ -23,7 +24,15 @@ public class ParsingJavaEntity {
     private static final String FILE_PACKAGE_PREFIX = "src" + File.separator + "main" + File.separator + "java";
     private static final String FOUR_SPACE = "    ";
 
-    public void parsingJavaEntity(String packagePath, TableMsg tableMsg) throws IOException {
+    public static void parsingJavaEntity(String packagePath, XlsMsg xlsMsg) throws IOException {
+        log.info("开始生成java实体类，excel信息：" + xlsMsg.getFilePath());
+        for (TableMsg tableMsg : xlsMsg.getTableMsgList()) {
+            parsingJavaEntity(packagePath, tableMsg);
+        }
+    }
+    
+    
+    public static void parsingJavaEntity(String packagePath, TableMsg tableMsg) throws IOException {
         if (!packagePath.contains(FILE_PACKAGE_PREFIX)) {
             log.info("包名校验失败：" + packagePath);
             return;
@@ -48,7 +57,7 @@ public class ParsingJavaEntity {
         }
     }
 
-    public List<String> outString(String packagePath, TableMsg tableMsg) {
+    public static List<String> outString(String packagePath, TableMsg tableMsg) {
         List<String> result = new ArrayList<>();
         
         // package信息

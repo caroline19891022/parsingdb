@@ -2,6 +2,7 @@ package org.chee.parsingdb.data;
 
 import lombok.Builder;
 import lombok.Data;
+import org.chee.parsingdb.enums.DatabaseEnum;
 
 import java.util.List;
 
@@ -10,5 +11,6 @@ import java.util.List;
 public class XlsMsg {
     private Integer sheetCount;
     private String filePath;
+    private DatabaseEnum databaseType;
     private List<TableMsg> tableMsgList;
 }

@@ -42,7 +42,7 @@ public class ParsingJavaEntityTest {
         fileLineList.add(line1);
         fileLineList.add(line2);
         fileLineList.add(line3);
-        TableMsg tableMsg = TableMsg.builder().sheetNum(1).tableCode("receivable_info").tableName("待收款记录").fileLineList(fileLineList).build();
+        TableMsg tableMsg = TableMsg.builder().tableCode("receivable_info").tableName("待收款记录").fileLineList(fileLineList).build();
         
         parsingJavaEntity.parsingJavaEntity(packagePath, tableMsg);
     }

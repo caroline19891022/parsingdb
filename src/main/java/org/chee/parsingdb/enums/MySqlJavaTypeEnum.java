@@ -14,16 +14,16 @@ public enum MySqlJavaTypeEnum {
     /**
      * bigint
      */
-    LONG("bigint", "Long"),
-    INT("int", "Integer"),
-    VARCHAR("varchar", "String"),
-    CHAR("char", "String"),
-    FLOAT("float", "BigDecimal"),
-    DOUBLE("double", "BigDecimal"),
-    DECIMAL("decimal", "BigDecimal"),
-    DATE("date", "Date"),
-    TIMESTAMP("timestamp", "Date"),
-    UNKNOWN("", "//todo unknown mysql type");
+    LONG(       "bigint",       "Long"),
+    INT(        "int",          "Integer"),
+    VARCHAR(    "varchar",      "String"),
+    CHAR(       "char",         "String"),
+    FLOAT(      "float",        "BigDecimal"),
+    DOUBLE(     "double",       "BigDecimal"),
+    DECIMAL(    "decimal",      "BigDecimal"),
+    DATE(       "date",         "Date"),
+    TIMESTAMP(  "timestamp",    "Date"),
+    UNKNOWN(    "",             "//todo unknown mysql type");
     
     
     private String mySqlType;
