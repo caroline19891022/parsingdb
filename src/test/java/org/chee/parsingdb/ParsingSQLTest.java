@@ -18,11 +18,9 @@ import java.util.List;
  */
 public class ParsingSQLTest {
 
-    private ParsingSQL parsingSQL;
 
     @Before
     public void before() throws Exception {
-        parsingSQL = new ParsingSQL();
     }
 
     @After
@@ -42,8 +40,12 @@ public class ParsingSQLTest {
         fileLineList.add(line2);
         fileLineList.add(line3);
         TableMsg tableMsg = TableMsg.builder().tableCode("receivable_info").tableName("待收款记录").fileLineList(fileLineList).build();
-        parsingSQL.parsingMySQL(tableMsg);
+        ParsingSQL.parsingMySQL(tableMsg);
     }
 
 
+    @Test
+    public void writeSqlFile() {
+        // todo
+    }
 } 
