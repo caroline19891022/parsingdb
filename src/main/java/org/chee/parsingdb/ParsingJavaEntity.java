@@ -5,7 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.chee.parsingdb.data.FileLine;
 import org.chee.parsingdb.data.TableMsg;
 import org.chee.parsingdb.data.XlsMsg;
+import org.chee.parsingdb.enums.DatabaseEnum;
 import org.chee.parsingdb.enums.MySqlJavaTypeEnum;
+import org.chee.parsingdb.enums.OracleJavaTypeEnum;
 import org.chee.parsingdb.utils.LogUtils;
 import org.chee.parsingdb.utils.MyStringUtils;
 
@@ -18,6 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * 生成java类
+ * @author Caroline
+ */
 @Log
 public class ParsingJavaEntity {
 
@@ -27,12 +33,12 @@ public class ParsingJavaEntity {
     public static void parsingJavaEntity(String packagePath, XlsMsg xlsMsg) throws IOException {
         log.info("开始生成java实体类，excel信息：" + xlsMsg.getFilePath());
         for (TableMsg tableMsg : xlsMsg.getTableMsgList()) {
-            parsingJavaEntity(packagePath, tableMsg);
+            parsingJavaEntity(packagePath, tableMsg, xlsMsg.getDatabaseType());
         }
     }
     
     
-    public static void parsingJavaEntity(String packagePath, TableMsg tableMsg) throws IOException {
+    public static void parsingJavaEntity(String packagePath, TableMsg tableMsg, DatabaseEnum databaseType) throws IOException {
         if (!packagePath.contains(FILE_PACKAGE_PREFIX)) {
             log.info("包名校验失败：" + packagePath);
             return;
@@ -47,7 +53,7 @@ public class ParsingJavaEntity {
         file.createNewFile();
 
         try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
-            List<String> outStringList = outString(packagePath, tableMsg);
+            List<String> outStringList = outString(packagePath, tableMsg, databaseType);
             for (String str : outStringList) {
                 out.write(str);
                 out.newLine();
@@ -57,7 +63,7 @@ public class ParsingJavaEntity {
         }
     }
 
-    public static List<String> outString(String packagePath, TableMsg tableMsg) {
+    public static List<String> outString(String packagePath, TableMsg tableMsg, DatabaseEnum databaseType) {
         List<String> result = new ArrayList<>();
         
         // package信息
@@ -92,7 +98,16 @@ public class ParsingJavaEntity {
             if (Boolean.TRUE.equals(line.getIsPrimaryKey())) {
                 result.add(FOUR_SPACE + "@Id");
             }
-            result.add(FOUR_SPACE + "private " + MySqlJavaTypeEnum.getJavaType(line.getDataType()) + " " + MyStringUtils.underLineToCamel(line.getCode()) + ";");
+            switch (databaseType) {
+                case MY_SQL:
+                    result.add(FOUR_SPACE + "private " + MySqlJavaTypeEnum.getJavaType(line.getDataType()) + " " + MyStringUtils.underLineToCamel(line.getCode()) + ";");
+                    break;
+                case ORACLE:
+                    result.add(FOUR_SPACE + "private " + OracleJavaTypeEnum.getJavaType(line.getDataType()) + " " + MyStringUtils.underLineToCamel(line.getCode()) + ";");
+                    break;
+                default:
+                    break;
+            }
             result.add("");
         }
         result.add("}");

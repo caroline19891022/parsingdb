@@ -2,6 +2,7 @@ package org.chee.parsingdb;
 
 import org.chee.parsingdb.data.FileLine;
 import org.chee.parsingdb.data.TableMsg;
+import org.chee.parsingdb.enums.DatabaseEnum;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class ParsingJavaEntityTest {
         fileLineList.add(line3);
         TableMsg tableMsg = TableMsg.builder().tableCode("receivable_info").tableName("待收款记录").fileLineList(fileLineList).build();
         
-        parsingJavaEntity.parsingJavaEntity(packagePath, tableMsg);
+        parsingJavaEntity.parsingJavaEntity(packagePath, tableMsg, DatabaseEnum.MY_SQL);
     }
 
     /**
