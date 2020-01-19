@@ -5,6 +5,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 /**
  * ReadAndParse Tester.
  *
@@ -32,4 +34,8 @@ public class ReadAndParseTest {
     }
 
 
+    @Test
+    public void excelToSql() throws IOException {
+        ReadAndParse.excelToSql("D:\\workspace\\parsingdb\\src\\test\\java\\org\\chee\\parsingdb\\file\\白条账户批扣数据库设计.xlsx", "D:\\workspace\\parsingdb\\src\\main\\java\\org\\chee\\parsingdb\\data", DatabaseEnum.MY_SQL);
+    }
 } 

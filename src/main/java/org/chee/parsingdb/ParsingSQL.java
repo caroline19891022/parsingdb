@@ -25,32 +25,44 @@ public class ParsingSQL {
     
     private static final String TWO_SPACE = "  ";
     
-    public static void parsingMySQL(TableMsg tableMsg) {
-        String createTableSql = tableMsg.getFileLineList().stream().map(fileLine -> {
-            String line = fileLine.getCode() + " " + fileLine.getDataType();
-            if (StringUtils.isNotEmpty(fileLine.getDefaultValue())) {
-                line += " default " + fileLine.getDefaultValue();
+    public static List<String> parsingMySQL(TableMsg tableMsg) {
+        List<String> result = new ArrayList<>();
+        result.add("-- auto create table " + tableMsg.getTableCode());
+        result.add("create table " + tableMsg.getTableCode());
+        result.add("(");
+        for (FileLine fileLine : tableMsg.getFileLineList()) {
+            String lineStr = StringUtils.upperCase(fileLine.getCode());
+            lineStr += " ";
+            lineStr += StringUtils.upperCase(fileLine.getDataType());
+            if (StringUtils.isNotBlank(fileLine.getDefaultValue())) {
+                lineStr += " default" + fileLine.getDefaultValue();
             }
-            if (Objects.equals(fileLine.getIsPrimaryKey(), true)) {
-                line += " primary key ";
-            } else if (Boolean.FALSE.equals(fileLine.getCanBeNull())) {
-                line += " not null ";
+            if (Boolean.TRUE.equals(fileLine.getIsPrimaryKey())) {
+                lineStr += " primary key";
             }
-            return line;
-        }).collect(Collectors.joining(",\n", "create table " + tableMsg.getTableCode() + "(", ");"));
-        log.info("\n" + createTableSql);
+            if (Boolean.FALSE.equals(fileLine.getCanBeNull())) {
+                lineStr += " not null";
+            }
+            lineStr += ",";
+            result.add(TWO_SPACE + lineStr);
+        }
+        result.add(");");
+        result.add("");
 
-        String commentSql = tableMsg.getFileLineList().stream().map(fileLine ->
-                "alter table " + tableMsg.getTableCode() + " modify " + fileLine.getCode()
-                        + " " + fileLine.getDataType() + " comment '" + fileLine.getName() + " " 
-                        + Optional.ofNullable(fileLine.getComment()).orElse("") + "';")
-                .collect(Collectors.joining("\n"));
-        log.info("\n" + commentSql);
+        // 注释部分
+        for (FileLine fileLine : tableMsg.getFileLineList()) {
+            String commentStr = "alter table " + tableMsg.getTableCode() + " modify " + fileLine.getCode()
+                    + " " + fileLine.getDataType() + " comment '" + fileLine.getName() + " "
+                    + Optional.ofNullable(fileLine.getComment()).orElse("") + "';";
+            result.add(commentStr);
+        }
+        result.add("");
+        return result;
     }
     
     public static List<String> parsingOracle(TableMsg tableMsg) {
         List<String> result = new ArrayList<>();
-        result.add("-- auto create table" + tableMsg.getTableCode().toUpperCase());
+        result.add("-- auto create table " + tableMsg.getTableCode().toUpperCase());
         result.add("CREATE TABLE " + tableMsg.getTableCode().toUpperCase());
         result.add("(");
         for (FileLine fileLine : tableMsg.getFileLineList()) {
@@ -90,7 +102,7 @@ public class ParsingSQL {
     }
     
     public static void writeSqlFile(String sqlFilePath, XlsMsg xlsMsg) throws IOException {
-        String xlsFileName = xlsMsg.getFilePath().substring(xlsMsg.getFilePath().lastIndexOf(File.pathSeparator + 1));
+        String xlsFileName = new File(xlsMsg.getFilePath()).getName();
         File file = new File(sqlFilePath, xlsFileName + ".sql");
         int fileNum = 0;
         while (file.exists()) {
@@ -104,7 +116,7 @@ public class ParsingSQL {
                 printList = xlsMsg.getTableMsgList().stream().flatMap(tableMsg -> parsingOracle(tableMsg).stream()).collect(Collectors.toList());
                 break;
             case MY_SQL:
-                //todo
+                printList = xlsMsg.getTableMsgList().stream().flatMap(tableMsg -> parsingMySQL(tableMsg).stream()).collect(Collectors.toList());
                 break;
             default:
                 return;

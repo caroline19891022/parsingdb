@@ -22,4 +22,14 @@ public class ReadAndParse {
         xlsMsg.setDatabaseType(databaseType);
         ParsingJavaEntity.parsingJavaEntity(javaPackagePath, xlsMsg);
     }
+    
+    public static void excelToSql(String excelPath, String sqlPath, DatabaseEnum databaseType) throws IOException {
+        XlsMsg xlsMsg = ReadExcel.getXlsMsg(excelPath);
+        if (xlsMsg == null) {
+            log.info("excel解析失败");
+            return;
+        }
+        xlsMsg.setDatabaseType(databaseType);
+        ParsingSQL.writeSqlFile(sqlPath, xlsMsg);
+    }
 }
